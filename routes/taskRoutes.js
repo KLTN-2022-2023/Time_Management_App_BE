@@ -2,9 +2,10 @@ const StaticValue = require("../models/static");
 const Task = require("../models/task.js");
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth");
 
 //Create Task
-router.post("/CreateTask", async (req, res) => {
+router.post("/CreateTask", auth, async (req, res) => {
   const data = new Task({
     userId: req.body.userId,
     parentId: req.body.parentId,
@@ -14,32 +15,63 @@ router.post("/CreateTask", async (req, res) => {
   });
   try {
     const dataToSave = await data.save();
-    res.status(200).json(dataToSave);
+
+    const response = {
+      message: "Save Successfully",
+      isSuccess: true,
+      data: dataToSave,
+    };
+
+    res.status(200).json(response);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
   }
 });
 
 //Find task by userId
-router.get("/GetTasksByUserId", (req, res) => {
+router.get("/GetTasksByUserId", auth, (req, res) => {
   //login info
   const userId = req.body.userId;
 
   try {
     Task.find({ userId: userId }).then((tasks) => {
       if (tasks == null) {
-        res.status(200).json([]);
+        const response = {
+          message: "Successfully",
+          isSuccess: true,
+          data: [],
+        };
+
+        res.status(200).json(response);
       } else {
-        res.status(200).json(tasks);
+        const response = {
+          message: "Successfully",
+          isSuccess: true,
+          data: tasks,
+        };
+
+        res.status(200).json(response);
       }
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
   }
 });
 
 //Update Task
-router.put("/UpdateTask", async (req, res) => {
+router.put("/UpdateTask", auth, async (req, res) => {
   //login info
   const id = req.body._id;
   const updatedData = req.body;
@@ -50,21 +82,37 @@ router.put("/UpdateTask", async (req, res) => {
 
     //Failed
     if (result == null) {
-      res.status(404).send({
-        error: "Update Failed",
-      });
+      const response = {
+        message: "Update Failed",
+        isSuccess: false,
+        data: null,
+      };
+
+      res.status(404).send(response);
     }
     //Success
     else {
-      res.status(200).json(result);
+      const response = {
+        message: "Update Successfully",
+        isSuccess: true,
+        data: result,
+      };
+
+      res.status(200).json(response);
     }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
   }
 });
 
 //Delete Task
-router.delete("/DeleteTask/:id", async (req, res) => {
+router.delete("/DeleteTask/:id", auth, async (req, res) => {
   //login info
   const id = req.params.id;
   try {
@@ -72,22 +120,32 @@ router.delete("/DeleteTask/:id", async (req, res) => {
 
     //Failed
     if (result == null) {
-      res.status(404).send({
+      const response = {
+        message: "Delete Failed",
         isSuccess: false,
-        error: "Update Failed",
         data: null,
-      });
+      };
+
+      res.status(404).send(response);
     }
     //Success
     else {
-      res.status(200).send({
+      const response = {
+        message: "Delete Successfully",
         isSuccess: true,
-        message: "Update Failed",
         data: result,
-      });
+      };
+
+      res.status(200).send(response);
     }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
   }
 });
 

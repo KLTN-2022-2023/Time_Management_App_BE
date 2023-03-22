@@ -2,6 +2,8 @@ const User = require("../models/user.js");
 const express = require("express");
 const router = express.Router();
 const CryptoJS = require("crypto-js");
+const jwt = require("jsonwebtoken");
+const auth = require("../middleware/auth");
 
 //Add User
 router.post("/AddUser", async (req, res) => {
@@ -26,7 +28,7 @@ router.post("/AddUser", async (req, res) => {
 });
 
 //Login
-router.get("/Login", (req, res) => {
+router.post("/Login", (req, res) => {
   //login info
   const email = req.body.email;
   const password = req.body.password;
@@ -35,28 +37,94 @@ router.get("/Login", (req, res) => {
     User.findOne({ email: email }).then((foundUser) => {
       //User not found
       if (foundUser == null) {
-        res.status(404).send({
-          error: "User not found",
-        });
+        const responseUser = {
+          message: "User not found",
+          isSuccess: false,
+          data: null,
+        };
+
+        res.status(404).send(responseUser);
       }
-      //User found
+      // User found
       else {
         //Password
         const decryptedPassword = CryptoJS.enc.Base64.parse(
           foundUser.password
         ).toString(CryptoJS.enc.Utf8);
 
+        // Correct password
         if (decryptedPassword != null && decryptedPassword == password) {
-          res.status(200).json(foundUser);
+          // Create Token
+          const token = jwt.sign(
+            { _id: foundUser._id, email: foundUser.email },
+            process.env.TOKEN_KEY,
+            {
+              expiresIn: "102h",
+            }
+          );
+
+          const response = {
+            message: "Login Successfully",
+            isSuccess: true,
+            data: token,
+          };
+
+          res.status(200).json(response);
         } else {
-          res.status(404).send({
-            error: "Password is not correct",
-          });
+          const responsePassword = {
+            message: "Password is not correct",
+            isSuccess: false,
+            data: null,
+          };
+
+          res.status(404).send(responsePassword);
         }
       }
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
+  }
+});
+
+// Get user by id
+router.post("/GetUserById", auth, (req, res) => {
+  //login info
+  const userId = req.body.userId;
+
+  try {
+    User.findById(userId).then((user) => {
+      if (user == null) {
+        const response = {
+          message: "Not Found",
+          isSuccess: false,
+          data: null,
+        };
+
+        res.status(404).json(response);
+      } else {
+        const response = {
+          message: "Successfully",
+          isSuccess: true,
+          data: user,
+        };
+
+        res.status(200).json(response);
+      }
+    });
+  } catch (error) {
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
   }
 });
 

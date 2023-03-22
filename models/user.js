@@ -23,6 +23,10 @@ const dataSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
+  avatar: {
+    required: false,
+    type: String,
+  },
   //Default
   createdDate: {
     required: false,
