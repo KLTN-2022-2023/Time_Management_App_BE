@@ -35,7 +35,7 @@ router.post("/CreateTask", auth, async (req, res) => {
 });
 
 //Find task by userId
-router.get("/GetTasksByUserId", auth, (req, res) => {
+router.post("/GetTasksByUserId", auth, (req, res) => {
   //login info
   const userId = req.body.userId;
 
@@ -111,9 +111,138 @@ router.put("/UpdateTask", auth, async (req, res) => {
   }
 });
 
-//Delete Task
+//Update Status Task
+router.put("/UpdateStatus/:id", auth, (req, res) => {
+  // Id
+  const id = req.params.id;
+  const options = { new: true };
+
+  Task.findById(id)
+    .then((task) => {
+      if (task == null) {
+        const response = {
+          message: "Task not found",
+          isSuccess: false,
+          data: null,
+        };
+
+        res.status(200).json(response);
+      } else {
+        // Update New Status
+        task.status =
+          task.status === StaticValue.TASK_STATUS_NEW
+            ? StaticValue.TASK_STATUS_DONE
+            : StaticValue.TASK_STATUS_NEW;
+
+        // Update
+        Task.findByIdAndUpdate(id, task, options)
+          .then((responseData) => {
+            if (responseData == null) {
+              const response = {
+                message: "Update Failed",
+                isSuccess: false,
+                data: null,
+              };
+
+              res.status(404).send(response);
+            } else {
+              const response = {
+                message: "Update Successfully",
+                isSuccess: true,
+                data: responseData,
+              };
+
+              res.status(200).json(response);
+            }
+          })
+          .catch((errData) => {
+            const responseError = {
+              message: errData.message,
+              isSuccess: false,
+              data: null,
+            };
+
+            res.status(400).json(responseError);
+          });
+      }
+    })
+    .catch((err) => {
+      const responseError = {
+        message: err.message,
+        isSuccess: false,
+        data: null,
+      };
+
+      res.status(400).json(responseError);
+    });
+});
+
+//Update Type Task
+router.put("/MarkImportant/:id", auth, (req, res) => {
+  // Id
+  const id = req.params.id;
+  const options = { new: true };
+
+  Task.findById(id)
+    .then((task) => {
+      if (task == null) {
+        const response = {
+          message: "Task not found",
+          isSuccess: false,
+          data: null,
+        };
+
+        res.status(200).json(response);
+      } else {
+        // Update Important
+        task.isImportant = !task.isImportant;
+
+        // Update
+        Task.findByIdAndUpdate(id, task, options)
+          .then((responseData) => {
+            if (responseData == null) {
+              const response = {
+                message: "Update Failed",
+                isSuccess: false,
+                data: null,
+              };
+
+              res.status(404).send(response);
+            } else {
+              const response = {
+                message: "Update Successfully",
+                isSuccess: true,
+                data: responseData,
+              };
+
+              res.status(200).json(response);
+            }
+          })
+          .catch((errData) => {
+            const responseError = {
+              message: errData.message,
+              isSuccess: false,
+              data: null,
+            };
+
+            res.status(400).json(responseError);
+          });
+      }
+    })
+    .catch((err) => {
+      const responseError = {
+        message: err.message,
+        isSuccess: false,
+        data: null,
+      };
+
+      res.status(400).json(responseError);
+    });
+});
+
+// Delete Task
 router.delete("/DeleteTask/:id", auth, async (req, res) => {
-  //login info
+  // Id
   const id = req.params.id;
   try {
     const result = await Task.findByIdAndDelete(id);

@@ -10,6 +10,7 @@ const port = process.env.PORT || API_PORT;
 //Routes
 const userRoutes = require("./routes/userRoutes.js");
 const taskRoutes = require("./routes/taskRoutes.js");
+const s3Routes = require("./routes/s3Routes.js");
 
 //Database
 mongoose.connect(mongoString, {
@@ -37,6 +38,7 @@ app.use(cors());
 //API
 app.use("/User", userRoutes);
 app.use("/Task", taskRoutes);
+app.use("/S3", s3Routes);
 
 app.listen(port, () => {
   console.log(`Server Started at ${port}`);
