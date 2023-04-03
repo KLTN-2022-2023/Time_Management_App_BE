@@ -285,4 +285,67 @@ router.delete("/DeleteTask/:id", auth, async (req, res) => {
   }
 });
 
+// Fake Delete Task
+router.delete("/FakeDeleteTask/:id", auth, (req, res) => {
+  // Id
+  const id = req.params.id;
+  const options = { new: true };
+
+  Task.findById(id)
+    .then((task) => {
+      if (task == null) {
+        const response = {
+          message: "Task not found",
+          isSuccess: false,
+          data: null,
+        };
+
+        res.status(200).json(response);
+      } else {
+        // Update Important
+        task.isDeleted = true;
+
+        // Update
+        Task.findByIdAndUpdate(id, task, options)
+          .then((responseData) => {
+            if (responseData == null) {
+              const response = {
+                message: "Delete Failed",
+                isSuccess: false,
+                data: null,
+              };
+
+              res.status(404).send(response);
+            } else {
+              const response = {
+                message: "Delete Successfully",
+                isSuccess: true,
+                data: responseData,
+              };
+
+              res.status(200).json(response);
+            }
+          })
+          .catch((errData) => {
+            const responseError = {
+              message: errData.message,
+              isSuccess: false,
+              data: null,
+            };
+
+            res.status(400).json(responseError);
+          });
+      }
+    })
+    .catch((err) => {
+      const responseError = {
+        message: err.message,
+        isSuccess: false,
+        data: null,
+      };
+
+      res.status(400).json(responseError);
+    });
+});
+
 module.exports = router;
