@@ -7,12 +7,19 @@ const auth = require("../middleware/auth");
 //Create Task
 router.post("/CreateTask", auth, async (req, res) => {
   const data = new Task({
+    name: req.body.name,
     userId: req.body.userId,
     parentId: req.body.parentId,
-    name: req.body.name,
     description: req.body.description,
     files: req.body.files,
+    isImportant: req.body.isImportant,
+    status: req.body.status,
+    startTime: req.body.startTime,
+    dueTime: req.body.dueTime,
+    remindTime: req.body.remindTime,
+    repeatTime: req.body.repeatTime,
   });
+
   try {
     const dataToSave = await data.save();
 
