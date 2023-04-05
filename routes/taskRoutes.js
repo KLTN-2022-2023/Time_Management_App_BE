@@ -120,7 +120,7 @@ router.put("/UpdateTask", auth, async (req, res) => {
 });
 
 //Update Status Task
-router.put("/UpdateStatus/:id", auth, (req, res) => {
+router.get("/UpdateStatus/:id", auth, (req, res) => {
   // Id
   const id = req.params.id;
   const options = { new: true };
@@ -186,7 +186,7 @@ router.put("/UpdateStatus/:id", auth, (req, res) => {
 });
 
 //Update Type Task
-router.put("/MarkImportant/:id", auth, (req, res) => {
+router.get("/MarkImportant/:id", auth, (req, res) => {
   // Id
   const id = req.params.id;
   const options = { new: true };
