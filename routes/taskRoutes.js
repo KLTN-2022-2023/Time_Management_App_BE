@@ -8,10 +8,11 @@ const auth = require("../middleware/auth");
 router.post("/CreateTask", auth, async (req, res) => {
   const data = new Task({
     name: req.body.name,
+    typeId: req.body.typeId,
     userId: req.body.userId,
-    parentId: req.body.parentId,
     description: req.body.description,
     files: req.body.files,
+    checkList: req.body.checkList,
     isImportant: req.body.isImportant,
     status: req.body.status,
     startTime: req.body.startTime,
@@ -19,6 +20,7 @@ router.post("/CreateTask", auth, async (req, res) => {
     remindTime: req.body.remindTime,
     repeatTime: req.body.repeatTime,
     isRepeatedById: req.body.isRepeatedById,
+    createdDate: req.body.createdDate,
   });
 
   try {
