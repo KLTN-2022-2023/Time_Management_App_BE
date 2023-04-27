@@ -2,29 +2,20 @@ const StaticValue = require("./static");
 const mongoose = require("mongoose");
 const moment = require("moment-timezone");
 
+// moment.tz.setDefault("Asia/Ho_Chi_Minh");
+
 const dataSchema = new mongoose.Schema({
   name: {
     required: true,
     type: String,
   },
-  address: {
+  description: {
     required: false,
     type: String,
+    default: null,
   },
-  age: {
-    required: false,
-    type: Number,
-  },
-  email: {
-    required: true,
-    type: String,
-  },
-  password: {
-    required: true,
-    type: String,
-  },
-  avatar: {
-    required: false,
+  userId: {
+    require: true,
     type: String,
   },
   //Default
@@ -45,4 +36,4 @@ const dataSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("user", dataSchema);
+module.exports = mongoose.model("type", dataSchema);
