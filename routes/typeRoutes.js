@@ -1,5 +1,6 @@
 const StaticValue = require("../models/static");
 const Type = require("../models/type.js");
+const Task = require("../models/task.js");
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
@@ -150,6 +151,11 @@ router.delete("/FakeDeleteType/:id", auth, (req, res) => {
                 isSuccess: true,
                 data: responseData,
               };
+
+              Task.updateMany(
+                { typeId: id },
+                { $set: { isDeleted: true } }
+              ).then((resDelete) => console.log(resDelete));
 
               res.status(200).json(response);
             }
