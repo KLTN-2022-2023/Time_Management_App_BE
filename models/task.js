@@ -9,14 +9,13 @@ const dataSchema = new mongoose.Schema({
     required: true,
     type: String,
   },
-  userId: {
+  typeId: {
     required: true,
     type: String,
   },
-  parentId: {
-    required: false,
+  userId: {
+    required: true,
     type: String,
-    default: null,
   },
   description: {
     required: false,
@@ -33,8 +32,18 @@ const dataSchema = new mongoose.Schema({
       },
     ],
   },
+  checkList: {
+    required: false,
+    type: [
+      {
+        checkId: String,
+        checkName: String,
+        isDone: Boolean,
+      },
+    ],
+  },
   isImportant: {
-    required: true,
+    required: false,
     type: Boolean,
     default: false,
   },
@@ -46,17 +55,17 @@ const dataSchema = new mongoose.Schema({
   // Date Time
   startTime: {
     required: false,
-    type: String,
-    default: moment(Date.now()).format(StaticValue.TIME_FORMAT),
+    type: Date,
+    default: null,
   },
   dueTime: {
     required: false,
-    type: String,
-    default: moment(Date.now()).format(StaticValue.TIME_FORMAT),
+    type: Date,
+    default: null,
   },
   remindTime: {
     required: false,
-    type: String,
+    type: Date,
     default: null,
   },
   repeatTime: {
@@ -72,12 +81,12 @@ const dataSchema = new mongoose.Schema({
   //Default
   createdDate: {
     required: false,
-    type: String,
-    default: moment(Date.now()).format(StaticValue.TIME_FORMAT),
+    type: Date,
+    default: null,
   },
   updatedDate: {
     required: false,
-    type: String,
+    type: Date,
     default: null,
   },
   isDeleted: {

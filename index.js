@@ -10,6 +10,8 @@ const port = process.env.PORT || API_PORT;
 //Routes
 const userRoutes = require("./routes/userRoutes.js");
 const taskRoutes = require("./routes/taskRoutes.js");
+const typeRoutes = require("./routes/typeRoutes.js");
+const reportRoutes = require("./routes/reportRoutes.js");
 const s3Routes = require("./routes/s3Routes.js");
 
 //Database
@@ -38,6 +40,8 @@ app.use(cors());
 //API
 app.use("/User", userRoutes);
 app.use("/Task", taskRoutes);
+app.use("/Type", typeRoutes);
+app.use("/Report", reportRoutes);
 app.use("/S3", s3Routes);
 
 app.listen(port, () => {
