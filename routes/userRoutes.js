@@ -127,5 +127,41 @@ router.post("/GetUserById", auth, (req, res) => {
     res.status(400).json(responseError);
   }
 });
+router.post("/UpdateProfile", auth, async (req, res) => {
+  // const email = req.body.email;
+  // const name = req.body.name;
+  // const address = req.body.address;
+  // const age = req.body.age;
+  const id = req.body.userId;
+  const updatedData = req.body;
+  const options = { new: true };
+  try {
+    const result = await User.findByIdAndUpdate(id, updatedData, options);
+    console.log(updatedData);
+    if (result == null) {
+      const response = {
+        message: "Update Failed",
+        isSuccess: false,
+        data: null,
+      };
+    res.status(404).send(response);
+    }else {
+      const response = {
+        message: "Update Successfully",
+        isSuccess: true,
+        data: result,
+      };
 
+      res.status(200).json(response);
+    }
+  } catch (err) {
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
+  }
+})
 module.exports = router;
