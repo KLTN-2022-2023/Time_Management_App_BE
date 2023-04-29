@@ -19,6 +19,7 @@ router.post("/CreateTask", auth, async (req, res) => {
     dueTime: req.body.dueTime,
     remindTime: req.body.remindTime,
     repeatTime: req.body.repeatTime,
+    endRepeat: req.body.endRepeat,
     isRepeatedById: req.body.isRepeatedById,
     createdDate: req.body.createdDate,
   });
