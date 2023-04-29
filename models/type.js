@@ -18,6 +18,11 @@ const dataSchema = new mongoose.Schema({
     require: true,
     type: String,
   },
+  isDefault: {
+    require: true,
+    type: Boolean,
+    default: false,
+  },
   //Default
   createdDate: {
     required: false,

@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 
 //Create Task
 router.post("/CreateTask", auth, async (req, res) => {
-  const data = new Task({
+  const dataReq = {
     name: req.body.name,
     typeId: req.body.typeId,
     userId: req.body.userId,
@@ -19,12 +19,25 @@ router.post("/CreateTask", auth, async (req, res) => {
     dueTime: req.body.dueTime,
     remindTime: req.body.remindTime,
     repeatTime: req.body.repeatTime,
+    endRepeat: req.body.endRepeat,
     isRepeatedById: req.body.isRepeatedById,
     createdDate: req.body.createdDate,
-  });
+  };
+  const data = new Task(dataReq);
 
   try {
     const dataToSave = await data.save();
+
+    // Save many
+    // if (dataReq.repeatTime) {
+    //   if (dataReq.repeatTime === "Everyday") {
+    //     console.log(dataReq.startTime);
+    //     let time = dataReq.startTime.setDate(time.getDate() + 1);
+
+    //   } else if (dataReq.repeatTime === "Every Week") {
+    //     while (time < dataReq.endRepeat) {}
+    //   }
+    // }
 
     const response = {
       message: "Save Successfully",

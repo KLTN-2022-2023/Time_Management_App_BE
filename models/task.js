@@ -65,12 +65,17 @@ const dataSchema = new mongoose.Schema({
   },
   remindTime: {
     required: false,
-    type: Date,
+    type: String,
     default: null,
   },
   repeatTime: {
     required: false,
     type: String,
+    default: null,
+  },
+  endRepeat: {
+    required: false,
+    type: Date,
     default: null,
   },
   isRepeatedById: {
