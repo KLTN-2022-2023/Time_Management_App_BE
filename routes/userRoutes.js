@@ -4,29 +4,59 @@ const router = express.Router();
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
-
+const accountSid = 'AC623b3d98550ffd441ff974b54913dd6c';
+const authToken = 'c02f7793e1f42b19315f436740e6b6af';
+const client = require('twilio')(accountSid, authToken);
 //Add User
-router.post("/AddUser", async (req, res) => {
+let OTP, user;
+router.post("/SignUp", async (req, res) => {
   //Password
   const encryptedPassword = CryptoJS.enc.Base64.stringify(
     CryptoJS.enc.Utf8.parse(req.body.password)
   );
-
-  const data = new User({
-    name: req.body.name,
-    address: req.body.address,
-    age: req.body.age,
-    email: req.body.email,
-    password: encryptedPassword.toString(),
-  });
   try {
-    const dataToSave = await data.save();
-    res.status(200).json(dataToSave);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+    const data = new User({
+      name: req.body.name,
+      address: req.body.address,
+      phone: req.body.phone,
+      email: req.body.email,
+      password: encryptedPassword.toString(),
+    });
+    user = data;
+    let digits = "0123456789";
+    OTP = "";
+    for (let i = 0; i < 4; i++) {
+      OTP += digits[Math.floor(Math.random() * 10)];
+    }
+    await client.messages
+      .create({
+        from: "+13203563587",
+        to: `+84${phone}`,
+        body: `Your otp verification for you is ${OTP}`
+      })
+      .then(message => console.log(message.sid))
+      .done();
+    res.status(200).json({ msg: "Successfully" })
+
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
 });
-
+router.post("/Verify", async (req, res) => {
+  try {
+    const otp = req.body.otp;
+    console.log(user);
+    if (otp != OTP) {
+      return res.status(400).json({ msg: "Incorrect OTP" })
+    }
+    else {
+      await user.save();
+      return res.status(200).json(user)
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
 //Login
 router.post("/Login", (req, res) => {
   //login info
@@ -144,8 +174,8 @@ router.post("/UpdateProfile", auth, async (req, res) => {
         isSuccess: false,
         data: null,
       };
-    res.status(404).send(response);
-    }else {
+      res.status(404).send(response);
+    } else {
       const response = {
         message: "Update Successfully",
         isSuccess: true,
