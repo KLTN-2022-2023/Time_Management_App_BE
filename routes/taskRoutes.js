@@ -28,17 +28,6 @@ router.post("/CreateTask", auth, async (req, res) => {
   try {
     const dataToSave = await data.save();
 
-    // Save many
-    // if (dataReq.repeatTime) {
-    //   if (dataReq.repeatTime === "Everyday") {
-    //     console.log(dataReq.startTime);
-    //     let time = dataReq.startTime.setDate(time.getDate() + 1);
-
-    //   } else if (dataReq.repeatTime === "Every Week") {
-    //     while (time < dataReq.endRepeat) {}
-    //   }
-    // }
-
     const response = {
       message: "Save Successfully",
       isSuccess: true,
@@ -362,6 +351,70 @@ router.delete("/FakeDeleteTask/:id", auth, (req, res) => {
 
       res.status(400).json(responseError);
     });
+});
+
+// Task Route
+router.post("/CreateRepeat/", auth, async (req, res) => {
+  const dataReq = {
+    name: req.body.data.name,
+    typeId: req.body.data.typeId,
+    userId: req.body.data.userId,
+    description: req.body.data.description,
+    files: req.body.data.files,
+    checkList: req.body.data.checkList,
+    isImportant: req.body.data.isImportant,
+    status: req.body.data.status,
+    startTime: req.body.data.startTime,
+    dueTime: req.body.data.dueTime,
+    remindTime: req.body.data.remindTime,
+    repeatTime: req.body.data.repeatTime,
+    endRepeat: req.body.data.endRepeat,
+    isRepeatedById: req.body.data.isRepeatedById,
+    createdDate: req.body.data.createdDate,
+  };
+  const dates = req.body.datesRepeat;
+  const data = new Task(dataReq);
+
+  try {
+    const dataToSave = await data.save();
+
+    const response = {
+      message: "Save Successfully",
+      isSuccess: true,
+      data: dataToSave,
+    };
+
+    // Repeat
+    let created = 0;
+    if (dates) {
+      dates.forEach((element) => {
+        const subData = new Task({
+          ...dataReq,
+          startTime: element.start,
+          dueTime: element.end,
+          isRepeatedById: dataToSave._id,
+        });
+
+        subData.save().then((res) => {
+          if (res) {
+            created++;
+          }
+        });
+      });
+    }
+
+    console.log(created, dates.length);
+
+    res.status(200).json(response);
+  } catch (error) {
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
+  }
 });
 
 module.exports = router;
