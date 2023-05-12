@@ -98,9 +98,6 @@ router.post("/ReportByYear", auth, (req, res) => {
           res.status(200).json(response);
         }
       }
-
-
-
     });
   } catch (error) {
     const responseError = {
@@ -116,6 +113,7 @@ router.post("/ReportByYear", auth, (req, res) => {
 router.post("/ReportByMonth", auth, (req, res) => {
   const userId = req.body.userId;
   const month = req.body.month;
+  const year = req.body.year;
   try {
     Task.find({ userId: userId, isDeleted: false }).then((tasks) => {
       console.log(month)
@@ -129,9 +127,10 @@ router.post("/ReportByMonth", auth, (req, res) => {
         res.status(200).json(response);
       } else {
         let filteredData = tasks.filter((x) => {
-          console.log(moment(tasks.startTime).format("YYYY-MM-DD").toString().substring(5, 7))
+
           return (
-            (moment(x.startTime).format("YYYY-MM-DD").toString().substring(5, 7) === month)
+            (moment(x.startTime).format("YYYY-MM-DD").toString().substring(5, 7) === month) &&
+            (moment(x.startTime).format("YYYY-MM-DD").toString().substring(0, 4) === year)
           )
         });
         if (filteredData == null) {

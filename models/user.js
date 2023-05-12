@@ -11,6 +11,10 @@ const dataSchema = new mongoose.Schema({
     required: false,
     type: String,
   },
+  phone: {
+    required: true,
+    type: String
+  },
   age: {
     required: false,
     type: Number,
