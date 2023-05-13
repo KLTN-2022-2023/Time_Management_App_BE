@@ -68,6 +68,11 @@ const dataSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  remindMode: {
+    required: false,
+    type: String,
+    default: null,
+  },
   repeatTime: {
     required: false,
     type: String,

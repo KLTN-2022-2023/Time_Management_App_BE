@@ -188,7 +188,7 @@ router.post("/GetTypesByUserId", auth, (req, res) => {
   const userId = req.body.userId;
 
   try {
-    Type.find({ userId: userId }).then((tasks) => {
+    Type.find({ userId: userId, isDeleted: false }).then((tasks) => {
       if (tasks == null) {
         const response = {
           message: "Successfully",

@@ -18,6 +18,7 @@ router.post("/CreateTask", auth, async (req, res) => {
     startTime: req.body.startTime,
     dueTime: req.body.dueTime,
     remindTime: req.body.remindTime,
+    remindMode: req.body.remindMode,
     repeatTime: req.body.repeatTime,
     endRepeat: req.body.endRepeat,
     isRepeatedById: req.body.isRepeatedById,
@@ -52,7 +53,7 @@ router.post("/GetTasksByUserId", auth, (req, res) => {
   const userId = req.body.userId;
 
   try {
-    Task.find({ userId: userId }).then((tasks) => {
+    Task.find({ userId: userId, isDeleted: false }).then((tasks) => {
       if (tasks == null) {
         const response = {
           message: "Successfully",
@@ -367,6 +368,7 @@ router.post("/CreateRepeat/", auth, async (req, res) => {
     startTime: req.body.data.startTime,
     dueTime: req.body.data.dueTime,
     remindTime: req.body.data.remindTime,
+    remindMode: req.body.data.remindMode,
     repeatTime: req.body.data.repeatTime,
     endRepeat: req.body.data.endRepeat,
     isRepeatedById: req.body.data.isRepeatedById,
