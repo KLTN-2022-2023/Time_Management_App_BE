@@ -5,7 +5,7 @@ const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
 const accountSid = 'AC623b3d98550ffd441ff974b54913dd6c';
-const authToken = 'ddbf846e6fa243bb0fb0a3a8dddf4c27';
+const authToken = 'c90b58f20fc0505e309d1a87793b7ef4';
 const client = require('twilio')(accountSid, authToken);
 //Add User
 let OTP, user, handleForgot;
