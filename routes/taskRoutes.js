@@ -18,6 +18,7 @@ router.post("/CreateTask", auth, async (req, res) => {
     startTime: req.body.startTime,
     dueTime: req.body.dueTime,
     remindTime: req.body.remindTime,
+    remindMode: req.body.remindMode,
     repeatTime: req.body.repeatTime,
     endRepeat: req.body.endRepeat,
     isRepeatedById: req.body.isRepeatedById,
@@ -52,7 +53,7 @@ router.post("/GetTasksByUserId", auth, (req, res) => {
   const userId = req.body.userId;
 
   try {
-    Task.find({ userId: userId }).then((tasks) => {
+    Task.find({ userId: userId, isDeleted: false }).then((tasks) => {
       if (tasks == null) {
         const response = {
           message: "Successfully",
@@ -353,7 +354,7 @@ router.delete("/FakeDeleteTask/:id", auth, (req, res) => {
     });
 });
 
-// Task Route
+// Task Repeat
 router.post("/CreateRepeat/", auth, async (req, res) => {
   const dataReq = {
     name: req.body.data.name,
@@ -367,6 +368,7 @@ router.post("/CreateRepeat/", auth, async (req, res) => {
     startTime: req.body.data.startTime,
     dueTime: req.body.data.dueTime,
     remindTime: req.body.data.remindTime,
+    remindMode: req.body.data.remindMode,
     repeatTime: req.body.data.repeatTime,
     endRepeat: req.body.data.endRepeat,
     isRepeatedById: req.body.data.isRepeatedById,
@@ -403,7 +405,75 @@ router.post("/CreateRepeat/", auth, async (req, res) => {
       });
     }
 
-    console.log(created, dates.length);
+    res.status(200).json(response);
+  } catch (error) {
+    const responseError = {
+      message: error.message,
+      isSuccess: false,
+      data: null,
+    };
+
+    res.status(400).json(responseError);
+  }
+});
+
+// Task Repeat after update
+router.post("/CreateRepeatAfterUpdate/", auth, async (req, res) => {
+  const dataReq = {
+    // _id: req.body.data._id,
+    name: req.body.data.name,
+    typeId: req.body.data.typeId,
+    userId: req.body.data.userId,
+    description: req.body.data.description,
+    files: req.body.data.files,
+    checkList: req.body.data.checkList,
+    isImportant: req.body.data.isImportant,
+    status: req.body.data.status,
+    startTime: req.body.data.startTime,
+    dueTime: req.body.data.dueTime,
+    remindTime: req.body.data.remindTime,
+    remindMode: req.body.data.remindMode,
+    repeatTime: req.body.data.repeatTime,
+    endRepeat: req.body.data.endRepeat,
+    // isRepeatedById: req.body.data.isRepeatedById,
+    createdDate: req.body.data.createdDate,
+  };
+
+  const dataSaved = {
+    ...dataReq,
+    _id: req.body.data._id,
+    isRepeatedById: req.body.data.isRepeatedById,
+  };
+
+  const dates = req.body.datesRepeat;
+
+  try {
+    // Repeat
+    let created = 0;
+    if (dates) {
+      dates.forEach((element) => {
+        const subData = new Task({
+          ...dataReq,
+          startTime: element.start,
+          dueTime: element.end,
+          isRepeatedById: dataSaved._id,
+        });
+
+        subData.save().then((res) => {
+          if (res) {
+            created++;
+          }
+        });
+      });
+    }
+
+    const response = {
+      message: "Save Successfully",
+      isSuccess: true,
+      data: {
+        success: created,
+      },
+    };
 
     res.status(200).json(response);
   } catch (error) {
