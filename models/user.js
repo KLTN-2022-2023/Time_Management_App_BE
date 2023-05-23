@@ -19,10 +19,7 @@ const dataSchema = new mongoose.Schema({
     required: false,
     type: Number,
   },
-  email: {
-    required: true,
-    type: String,
-  },
+
   password: {
     required: true,
     type: String,

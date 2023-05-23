@@ -4,8 +4,9 @@ const router = express.Router();
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
-const accountSid = 'AC623b3d98550ffd441ff974b54913dd6c';
-const authToken = 'c90b58f20fc0505e309d1a87793b7ef4';
+//const accountSid = 'AC623b3d98550ffd441ff974b54913dd6c';
+const accountSid = process.env.ACCOUNTSID
+const authToken = process.env.AUTHENTOKEN;
 const client = require('twilio')(accountSid, authToken);
 //Add User
 let OTP, user, handleForgot;
@@ -28,7 +29,6 @@ router.post("/SignUp", async (req, res) => {
       const data = new User({
         name: req.body.name,
         phone: req.body.phone,
-        email: req.body.email,
         password: encryptedPassword.toString(),
       });
       user = data;
@@ -37,15 +37,21 @@ router.post("/SignUp", async (req, res) => {
       for (let i = 0; i < 4; i++) {
         OTP += digits[Math.floor(Math.random() * 10)];
       }
-      await client.messages
-        .create({
-          from: "+13203563587",
-          to: `+84${phone}`,
-          body: `Your otp verification for you is ${OTP}`
-        })
-        .then(message => console.log(message.sid))
-        .done();
-      res.status(200).json({ msg: "Successfully" })
+      if (phone === "0369548201") {
+        await client.messages
+          .create({
+            from: "+13203563587",
+            to: `+84${phone}`,
+            body: `Your otp verification for you is ${OTP}`
+          })
+          .then(message => console.log(message.sid))
+          .done();
+        res.status(200).json({ msg: "Successfully" })
+      }
+      else {
+        res.status(400).json({ msg: "Fail" })
+      }
+
     } else {
       res.status(200).json({ msg: "Phone already exist" })
     }
@@ -117,11 +123,12 @@ router.post("/VerifyForgot", async (req, res) => {
 router.post("/Verify", async (req, res) => {
   try {
     const otp = req.body.otp;
-    console.log(user);
+    //console.log(user);
 
     console.log(otp, OTP)
     if (otp === OTP) {
-      await user.save();
+      const a = await user.save();
+      console.log(a)
       res.status(200).json({ user });
     } else {
       res.status(500).json({ msg: "Incorrect OTP" })
