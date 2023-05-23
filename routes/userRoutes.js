@@ -4,8 +4,9 @@ const router = express.Router();
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
+const { ConfigService } = require("aws-sdk");
 //const accountSid = 'AC623b3d98550ffd441ff974b54913dd6c';
-const accountSid = process.env.ACCOUNTSID
+const accountSid = process.env.ACCOUNTSID;
 const authToken = process.env.AUTHENTOKEN;
 const client = require('twilio')(accountSid, authToken);
 //Add User
@@ -37,7 +38,7 @@ router.post("/SignUp", async (req, res) => {
       for (let i = 0; i < 4; i++) {
         OTP += digits[Math.floor(Math.random() * 10)];
       }
-      if (phone === "0369548201") {
+      if (phone === "0369548201" && phone.length == 10) {
         await client.messages
           .create({
             from: "+13203563587",
@@ -61,41 +62,26 @@ router.post("/SignUp", async (req, res) => {
 });
 router.post("/ForgotPassWord", async (req, res) => {
   const phone = req.body.phone;
-  const newPass = CryptoJS.enc.Base64.stringify(
-    CryptoJS.enc.Utf8.parse(req.body.newPass)
-  );
   try {
-    User.findOne({ phone }).then((user) => {
-      if (user == null) {
-        const response = {
-          message: "Not Found",
-          isSuccess: false,
-          data: null,
-        };
-      } else {
-        user.password = newPass;
-        handleForgot = user;
-        const response = {
-          message: "Successfully",
-          isSuccess: true,
-          data: handleForgot,
-        };
-      }
-    })
     let digits = "0123456789";
     OTP = "";
     for (let i = 0; i < 4; i++) {
       OTP += digits[Math.floor(Math.random() * 10)];
     }
-    await client.messages
-      .create({
-        from: "+13203563587",
-        to: `+84${phone}`,
-        body: `Your otp verification for you is ${OTP}`
-      })
-      .then(message => console.log(message.sid))
-      .done();
-    res.status(200).json({ msg: "Successfully" })
+    if (phone === "0369548201") {
+      await client.messages
+        .create({
+          from: "+13203563587",
+          to: `+84${phone}`,
+          body: `Your otp verification for you is ${OTP}`
+        })
+        .then(message => console.log(message.sid))
+        .done();
+      res.status(200).json({ msg: "Successfully" })
+    } else {
+      res.status(400).json({ msg: "Fail" })
+    }
+
 
   } catch (err) {
     const responseError = {
@@ -110,7 +96,7 @@ router.post("/VerifyForgot", async (req, res) => {
   try {
     const otp = req.body.otp;
     if (otp === OTP) {
-      await handleForgot.save();
+
       res.status(200).json({ msg: "OTP correct" });
     } else {
       res.status(500).json({ msg: "OTP incorrect" });
@@ -119,11 +105,44 @@ router.post("/VerifyForgot", async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 })
+router.post("/ForgotNewPassword", async (req, res) => {
+  const phone = req.body.phone
+  const newPass = CryptoJS.enc.Base64.stringify(
+    CryptoJS.enc.Utf8.parse(req.body.newPassword)
+  );
+
+  try {
+    var dataUser;
+    console.log(phone);
+    await User.findOne({ phone }).then((usera) => {
+      if (usera == null) {
+        const response = {
+          message: "Not Found",
+          isSuccess: false,
+          data: null,
+        };
+      } else {
+        usera.password = newPass;
+        dataUser = usera;
+        const response = {
+          message: "Successfully",
+          isSuccess: true,
+          data: dataUser,
+        };
+      }
+    })
+
+    const a = await dataUser.save();
+    console.log(a)
+    res.status(200).json({ msg: "Successfully" })
+  } catch (err) {
+    res.status(400).json({ msg: "Fail" })
+  }
+})
 
 router.post("/Verify", async (req, res) => {
   try {
     const otp = req.body.otp;
-    //console.log(user);
 
     console.log(otp, OTP)
     if (otp === OTP) {
