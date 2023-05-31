@@ -2,8 +2,6 @@ const StaticValue = require("./static");
 const mongoose = require("mongoose");
 const moment = require("moment-timezone");
 
-// moment.tz.setDefault("Asia/Ho_Chi_Minh");
-
 const dataSchema = new mongoose.Schema({
   name: {
     required: true,

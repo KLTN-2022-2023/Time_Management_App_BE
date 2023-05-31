@@ -8,6 +8,7 @@ const { API_PORT } = process.env;
 const port = process.env.PORT || API_PORT;
 
 //Routes
+const notificationRoutes = require("./routes/notificationRoutes.js");
 const userRoutes = require("./routes/userRoutes.js");
 const taskRoutes = require("./routes/taskRoutes.js");
 const typeRoutes = require("./routes/typeRoutes.js");
@@ -38,6 +39,7 @@ app.use(express.json());
 app.use(cors());
 
 //API
+app.use("/Notification", notificationRoutes);
 app.use("/User", userRoutes);
 app.use("/Task", taskRoutes);
 app.use("/Type", typeRoutes);
